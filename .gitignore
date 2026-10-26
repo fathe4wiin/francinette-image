@@ -132,6 +132,7 @@ dmypy.json
 .idea/
 
 /temp/
+/francinette.tar
 /c??/
 .DS_Store
 /logs/
