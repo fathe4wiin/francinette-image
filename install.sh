@@ -1,170 +1,99 @@
 #!/bin/bash
-WHITE='\033[0;37m' 
+# Install francinette with a normal virtualenv and pip. Does not use sudo or Docker.
+WHITE='\033[0;37m'
 BLUE='\033[0;36m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
-BWhite='\033[1;37m' 
+BWhite='\033[1;37m'
 NC='\033[0m'
-set -e
+set -euo pipefail
 
-packages_ubuntu=(
-	gcc
-	libbsd-dev
-	libncurses-dev
-	valgrind
-	python3-pip
-	git
-)
+REPO="https://github.com/fathe4wiin/francinette-image.git"
+UPSTREAM="https://github.com/xicodomingues/francinette.git"
 
-#which clang
-
-packages_arch=(
-	gcc
-	clang
-	postgresql
-	libbsd
-	ncurses
-	valgrind
-	python-pip
-	git
-)
-
-## check if 
-
-check=1
-
-cd
-
-if [ -z "${INSTALL_DIR}" ]; then
-    INSTALL_DIR=$HOME
-    read -p "Install Directory (default: $INSTALL_DIR): " user_input
-    INSTALL_DIR=${user_input:-$INSTALL_DIR}
+if [ "$(id -u)" -eq 0 ]; then
+	echo -e "${RED}Do not run this installer as root. It only needs a normal user and pip.${NC}"
+	exit 1
 fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+	echo -e "${RED}python3 is not installed. This installer will not use sudo to install it.${NC}"
+	exit 1
+fi
+if ! command -v git >/dev/null 2>&1; then
+	echo -e "${RED}git is not installed. This installer will not use sudo to install it.${NC}"
+	exit 1
+fi
+
+if [ -z "${INSTALL_DIR:-}" ]; then
+	INSTALL_DIR="$HOME"
+	read -r -p "Install directory (default: $INSTALL_DIR): " user_input
+	INSTALL_DIR="${user_input:-$INSTALL_DIR}"
+fi
+mkdir -p "$INSTALL_DIR"
+INSTALL_DIR="$(cd "$INSTALL_DIR" && pwd)"
 export INSTALL_DIR
 
-if [ "$(uname)" != "Darwin" ]; then
-	case $(lsb_release -is) in
-		"Ubuntu")
-			for package in "${packages_ubuntu[@]}"; do
-				  if dpkg -s "$package" &> /dev/null; then
-				        echo "✔️ $package is installed."
-				    else
-				        echo "❌ $package is not installed."
-					check=0
-				    fi
-			done
-			;;
-		"Debian")
-			for package in "${packages_ubuntu[@]}"; do
-				  if dpkg -s "$package" &> /dev/null; then
-				        echo "✔️ $package is installed."
-				    else
-				        echo "❌ $package is not installed."
-					check=0
-				    fi
-			done
-			;;
-  		"Arch")
-			for package in "${packages_arch[@]}"; do
-				if pacman -Qi "$package" &> /dev/null; then
-			        	echo "✔️ $package is installed."
-				else
-			        	echo "❌ $package is not installed."
-					check=0
-			    	fi
-			done
-			;;
-   		"EndeavourOS")
-			for package in "${packages_arch[@]}"; do
-				if pacman -Qi "$package" &> /dev/null; then
-			        	echo "✔️ $package is installed."
-				else
-			        	echo "❌ $package is not installed."
-					check=0
-			    	fi
-			done
-			;;
-		*)
-			check=0
-			;;
-	esac
-else
-	check=0
+DEST="$INSTALL_DIR/francinette"
+IMAGE_DIR=""
+
+if [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+	SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+	if [ -d "$SCRIPT_DIR/francinette" ] && [ -f "$SCRIPT_DIR/scripts/drop_libft_bonus_rule.py" ]; then
+		IMAGE_DIR="$SCRIPT_DIR"
+	fi
 fi
 
-if [ "$check" -eq 1 ]; then
-	rm -rf $INSTALL_DIR/.tmp_francinette
-	echo -e "${BLUE} [Francinette] The francinette-image is useless!${RESET}"
-	read -p "Do you want to force the installation of francinette-image? (y/N) " answer
-	if [ -z "$answer" ]; then
-	    answer="n"
-	fi
-	if [[ "$answer" =~ ^[Yy]$ ]]; then
-		check=0;
-	else
-		cd "$INSTALL_DIR" 2>/dev/null || cd "$HOME" || cd /
-		if [ -d "$INSTALL_DIR/francinette" ]; then
-			rm -rf "$INSTALL_DIR/francinette"
-			cd "$INSTALL_DIR" 2>/dev/null || cd "$HOME" || cd /
-			echo -e "${BLUE}Francinette${GREEN} Uninstalled OK${NC}"
-		fi
-		echo -e "${GREEN} Installation of the original francinette in progress${NC}"
-		git clone --recursive https://github.com/xicodomingues/francinette.git "$INSTALL_DIR/francinette"
-		python3 -m venv "$INSTALL_DIR/francinette/venv"
-		if "$INSTALL_DIR/francinette/venv/bin/pip" install -r "$INSTALL_DIR/francinette/requirements.txt" \
-			&& "$INSTALL_DIR/francinette/venv/bin/pip" install norminette; then
-			find "$INSTALL_DIR/francinette" -name '*.py' -print0 \
-				| xargs -0 sed -i 's/from pipes import quote/from shlex import quote/g'
-			RC_FILE="$HOME/.zshrc"
-			touch "$RC_FILE"
-			sed -i '/^alias paco=/d; /^alias francinette=/d' "$RC_FILE"
-			printf "alias paco='%s/francinette/tester.sh'\n" "$INSTALL_DIR" >> "$RC_FILE"
-			printf "alias francinette='%s/francinette/tester.sh'\n" "$INSTALL_DIR" >> "$RC_FILE"
-		else
-			echo -e "${RED}Francinette installation failed${NC}"
-			check=0
-		fi
-	fi
-fi
-if [ "$check" -eq 0 ]; then
-	cd "$INSTALL_DIR" 2>/dev/null || cd "$HOME" || cd /
-	rm -rf "$INSTALL_DIR/.tmp_francinette"
-	echo -e "${GREEN} Installation of the francinette-image in progress${NC}"
-
-	if [ -d "$INSTALL_DIR/francinette" ]; then
-		rm -rf "$INSTALL_DIR/francinette"
-		cd "$INSTALL_DIR" 2>/dev/null || cd "$HOME" || cd /
-		echo -e "${BLUE}Francinette${GREEN} Uninstalled OK${NC}"
-	fi
-
-	if [ ! -d "$INSTALL_DIR/francinette-image" ]; then
-		git clone https://github.com/WaRtr0/francinette-image.git "$INSTALL_DIR/francinette-image"
-	fi
-	
-	chmod +x $INSTALL_DIR/francinette-image/run.sh
-	
-	if ! ls -l $INSTALL_DIR/francinette-image | grep "francinette.tar" &> /dev/null; then
-		if hostname | grep "42lyon.fr" &> /dev/null; then
-	 		if ls -l /sgoinfre/goinfre/Perso/mmorot/share | grep "francinette.tar" &> /dev/null; then
-	   			echo -e "${BLUE}[Francinette] ${WHITE}Copy of francinette.tar (${BWhite}/sgoinfre/goinfre/Perso/mmorot/share${WHITE})${RESET}"
-	      			cp /sgoinfre/goinfre/Perso/mmorot/share/francinette.tar $INSTALL_DIR/francinette-image/
-		 		echo -e "${BLUE}[Francinette] ${WHITE}Copy ${GREEN}OK${RESET}"
-	   		fi
-	 	fi
-	fi
-	
-	if ! ls -l $INSTALL_DIR/francinette-image | grep "francinette.tar" &> /dev/null; then
-		docker build -t francinette-image $INSTALL_DIR/francinette-image
-		docker image save francinette-image > $INSTALL_DIR/francinette-image/francinette.tar
-	fi
-	if ls -l $INSTALL_DIR/francinette-image | grep "francinette.tar" &> /dev/null; then
-		docker load < $INSTALL_DIR/francinette-image/francinette.tar
-	fi
-	
-	source $INSTALL_DIR/francinette-image/utils/install_zshrc.sh
+if [ -z "$IMAGE_DIR" ]; then
+	IMAGE_DIR="$INSTALL_DIR/francinette-image"
+	rm -rf "$IMAGE_DIR"
+	echo -e "${GREEN}Cloning ${BWhite}fathe4wiin/francinette-image${NC}"
+	git clone --depth 1 "$REPO" "$IMAGE_DIR"
 fi
 
-echo -e "${BLUE}[Francinette] ${GREEN}Installation completed!\n${WHITE}Use the ${BWhite}paco${WHITE} or ${BWhite}francinette${WHITE} commands in your project folder.${RESET}"
+echo -e "${GREEN}Cloning francinette${NC}"
+rm -rf "$DEST"
+git clone --recursive "$UPSTREAM" "$DEST"
 
-exec "$SHELL"
+echo -e "${GREEN}Applying libft test updates from the fork${NC}"
+cp -a "$IMAGE_DIR/francinette/." "$DEST/"
+python3 "$IMAGE_DIR/scripts/drop_libft_bonus_rule.py" \
+	"$DEST/tests/libft/war-machine/srcs/compil_lib.sh"
+find "$DEST" -name '*.py' -print0 \
+	| xargs -0 sed -i 's/from pipes import quote/from shlex import quote/g'
+chmod 755 "$DEST/tester.sh"
 
+make_venv() {
+	local dest="$1"
+	rm -rf "$dest"
+	if python3 -m venv "$dest" 2>/dev/null; then
+		return 0
+	fi
+	echo -e "${BLUE}python3-venv is missing. Creating the virtualenv with pip's virtualenv. No sudo.${NC}"
+	local pyz
+	pyz="$(mktemp)"
+	curl -fsSL https://bootstrap.pypa.io/virtualenv.pyz -o "$pyz"
+	python3 "$pyz" "$dest"
+	rm -f "$pyz"
+}
+
+echo -e "${GREEN}Creating a virtualenv and installing with pip${NC}"
+make_venv "$DEST/venv"
+"$DEST/venv/bin/python" -m pip install --upgrade pip
+"$DEST/venv/bin/python" -m pip install -r "$DEST/requirements.txt"
+"$DEST/venv/bin/python" -m pip install norminette
+
+write_aliases() {
+	local rc="$1"
+	touch "$rc"
+	sed -i '/^alias paco=/d; /^alias francinette=/d' "$rc"
+	printf "alias paco='%s/tester.sh'\n" "$DEST" >> "$rc"
+	printf "alias francinette='%s/tester.sh'\n" "$DEST" >> "$rc"
+}
+
+write_aliases "$HOME/.zshrc"
+write_aliases "$HOME/.bashrc"
+
+echo -e "${BLUE}[Francinette] ${GREEN}Installation completed.${NC}"
+echo -e "${WHITE}Virtualenv: ${BWhite}$DEST/venv${NC}"
+echo -e "${WHITE}Open a new terminal, then run ${BWhite}paco${WHITE} or ${BWhite}francinette${WHITE} in your project folder.${NC}"

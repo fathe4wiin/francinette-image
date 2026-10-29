@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if ! command -v docker >/dev/null 2>&1; then
+    exit 0
+fi
+
 if docker container ls -la | grep "run-paco" &> /dev/null; then
     docker exec -t run-paco chmod -R 777 /francinette/logs
     docker exec -t run-paco chmod -R 777 /francinette/temp

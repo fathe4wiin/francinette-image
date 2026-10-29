@@ -22,5 +22,8 @@ WORKDIR /francinette
 RUN /francinette/venv/bin/pip install -r requirements.txt
 RUN /francinette/venv/bin/pip install norminette
 RUN find /francinette -name '*.py' -exec sed -i 's/from pipes import quote/from shlex import quote/g' {} +
+COPY francinette/ /francinette/
+COPY scripts/drop_libft_bonus_rule.py /tmp/drop_libft_bonus_rule.py
+RUN python3 /tmp/drop_libft_bonus_rule.py
 RUN chmod 755 tester.sh
 CMD ["/francinette/tester.sh"]

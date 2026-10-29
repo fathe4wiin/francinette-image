@@ -1,2 +1,6 @@
 #!/bin/bash
-docker exec -it --workdir "$PWD" run-paco /francinette/venv/bin/python /francinette/main.py "$@"
+# Run the virtualenv install. Does not use Docker.
+set -euo pipefail
+
+ROOT="${FRANCINETTE_DIR:-$HOME/francinette}"
+exec "$ROOT/tester.sh" "$@"

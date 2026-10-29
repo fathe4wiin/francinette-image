@@ -1,14 +1,14 @@
-![GitHub](https://img.shields.io/github/license/WaRtr0/francinette-image) ![GitHub top language](https://img.shields.io/github/languages/top/WaRtr0/francinette-image) ![GitHub repo size](https://img.shields.io/github/repo-size/WaRtr0/francinette-image) ![GitHub Repo stars](https://img.shields.io/github/stars/WaRtr0/francinette-image) ![GitHub repo directory count](https://img.shields.io/github/directory-file-count/WaRtr0/francinette-image) ![GitHub watchers](https://img.shields.io/github/watchers/WaRtr0/francinette-image) ![GitHub followers](https://img.shields.io/github/followers/WaRtr0) ![GitHub contributors](https://img.shields.io/github/contributors/WaRtr0/francinette-image) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/WaRtr0/francinette-image/master)
+![GitHub](https://img.shields.io/github/license/fathe4wiin/francinette-image) ![GitHub top language](https://img.shields.io/github/languages/top/fathe4wiin/francinette-image) ![GitHub repo size](https://img.shields.io/github/repo-size/fathe4wiin/francinette-image) ![GitHub Repo stars](https://img.shields.io/github/stars/fathe4wiin/francinette-image) ![GitHub repo directory count](https://img.shields.io/github/directory-file-count/fathe4wiin/francinette-image) ![GitHub watchers](https://img.shields.io/github/watchers/fathe4wiin/francinette-image) ![GitHub followers](https://img.shields.io/github/followers/fathe4wiin) ![GitHub contributors](https://img.shields.io/github/contributors/fathe4wiin/francinette-image) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/fathe4wiin/francinette-image/master)
 
 <div align="right">
   👉
-  <a href="https://github.com/WaRtr0/francinette-image/blob/master/README.md">
+  <a href="https://github.com/fathe4wiin/francinette-image/blob/master/README.md">
     <img height="20px" src="https://github-production-user-asset-6210df.s3.amazonaws.com/25512932/282272296-82e81111-e524-439b-b971-900ce90d0603.png" alt="en">
   </a>
-   <a href="https://github.com/WaRtr0/francinette-image/blob/master/README_FR.md">
+   <a href="https://github.com/fathe4wiin/francinette-image/blob/master/README_FR.md">
     <img height="20px" src="https://github-production-user-asset-6210df.s3.amazonaws.com/25512932/282272298-f8be0b14-1175-41e8-9ff9-91eb29c35779.png" alt="fr">
   </a>
-  <a href="https://github.com/WaRtr0/francinette-image/blob/master/README_ES.md">
+  <a href="https://github.com/fathe4wiin/francinette-image/blob/master/README_ES.md">
     <img height="20px" src="https://github.com/user-attachments/assets/02babee0-5442-43f3-8062-71b946f3d62f" alt="es">
   </a>
 </div>
@@ -18,26 +18,25 @@ Francinette created by **[xicodomingues](https://github.com/xicodomingues)** is 
 
 Here is a simple installer that enables you to install Francinette on an **Ubuntu PC** within a **cluster of 42**  without `sudo` access. I would like to point out that I am not the creator of the Francinette! This is just a script that makes installation easier. Thanks to [xicodomingues](https://github.com/xicodomingues).
 
-How does the installer work? The installer will try to install the original Francinette and if it detects that you are unable to install it then it uses `Docker` to create an isolated Ubuntu environment which will automatically set up Francinette with all the necessary permissions within this virtual space. Your local `$HOME` directory will be shared with the Docker container, allowing the container to execute commands that interact with your files and thus run Francinette.
+How does the installer work? It clones this fork, clones [francinette](https://github.com/xicodomingues/francinette), and creates a Python virtualenv in `~/francinette/venv`. Packages, including norminette, are installed with that virtualenv's pip. Nothing is installed with `sudo`, and Docker is not used. `paco` and `francinette` run `tester.sh`, which activates that virtualenv.
 
 After installation, use the `francinette` or `paco` command inside your project's directory to execute it.
 
-> [!warning]
-> The docker version of francinette-image is 2.5 GB!
-> Unlike the [original Francinette](https://github.com/xicodomingues/francinette/tree/master#readme), "Francinette-image" is very large because it installs a complete second Ubuntu 22.04 Linux environment on your session.
+> [!note]
+> You need `python3` and `git` already on the session. The installer does not call `sudo` or `apt`. If `python3-venv` is missing, it falls back to [virtualenv.pyz](https://bootstrap.pypa.io/virtualenv.pyz), still without sudo.
 
 ## INSTALL:
 
 Copy and paste the following line into your terminal to kick off the installation, and you'll be all set to start testing your school 42 projects with Francinette in no time!
 
 ```shell
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/WaRtr0/francinette-image/master/install.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/fathe4wiin/francinette-image/master/install.sh)"
 ```
 
 ## Uninstall:
 
 ```shell
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/WaRtr0/francinette-image/master/uninstall.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/fathe4wiin/francinette-image/master/uninstall.sh)"
 ```
 ## Documentation
 
