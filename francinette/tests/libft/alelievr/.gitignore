@@ -1,0 +1,10 @@
+*.log
+obj/
+*.o
+*.a
+*.so
+*.dylib
+assets/tmp
+run_test
+assets/libtests
+*~

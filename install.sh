@@ -51,11 +51,12 @@ if [ -z "$IMAGE_DIR" ]; then
 	git clone --depth 1 "$REPO" "$IMAGE_DIR"
 fi
 
-echo -e "${GREEN}Cloning francinette${NC}"
+echo -e "${GREEN}Cloning the francinette runner${NC}"
 rm -rf "$DEST"
-git clone --recursive "$UPSTREAM" "$DEST"
+git clone --depth 1 "$UPSTREAM" "$DEST"
+rm -rf "$DEST/.git"
 
-echo -e "${GREEN}Applying libft test updates from the fork${NC}"
+echo -e "${GREEN}Copying the test suites from this repository${NC}"
 cp -a "$IMAGE_DIR/francinette/." "$DEST/"
 python3 "$IMAGE_DIR/scripts/drop_libft_bonus_rule.py" \
 	"$DEST/tests/libft/war-machine/srcs/compil_lib.sh"

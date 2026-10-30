@@ -41,6 +41,9 @@ def main():
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else PATH
     text = target.read_text()
     if OLD not in text:
+        if NEW in text and 'printf "\\033[64Glists"' in text:
+            print(f"already updated {target}")
+            return
         sys.exit(f"bonus block not found in {target}")
     text = text.replace(OLD, NEW, 1)
     text = text.replace('printf "\\033[64Gbonus"', 'printf "\\033[64Glists"', 1)

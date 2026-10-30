@@ -18,7 +18,7 @@ Francinette created by **[xicodomingues](https://github.com/xicodomingues)** is 
 
 Here is a simple installer that enables you to install Francinette on an **Ubuntu PC** within a **cluster of 42**  without `sudo` access. I would like to point out that I am not the creator of the Francinette! This is just a script that makes installation easier. Thanks to [xicodomingues](https://github.com/xicodomingues).
 
-How does the installer work? It clones this fork, clones [francinette](https://github.com/xicodomingues/francinette), and creates a Python virtualenv in `~/francinette/venv`. Packages, including norminette, are installed with that virtualenv's pip. Nothing is installed with `sudo`, and Docker is not used. `paco` and `francinette` run `tester.sh`, which activates that virtualenv.
+How does the installer work? It clones this fork. The test suites are already in this repository, under `francinette/tests`, and the installer copies them into place. It clones the francinette runner, then creates a Python virtualenv in `~/francinette/venv`. Packages, including norminette, are installed with that virtualenv's pip. Nothing is installed with `sudo`, and Docker is not used. `paco` and `francinette` run `tester.sh`, which activates that virtualenv.
 
 After installation, use the `francinette` or `paco` command inside your project's directory to execute it.
 
@@ -43,6 +43,8 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/fathe4wiin/francinette-i
 I can only advise you to look at the [original Francinette documentation](https://github.com/xicodomingues/francinette/tree/master#readme) for good use of this great tool!
 
 ## Who should I thank?
+
+The suites under `francinette/tests` are part of this repository. This list is credit for the people who wrote them.
 
 * [xicodomingues](https://github.com/xicodomingues) and [arsalas](https://github.com/arsalas) creator of the [francinette](https://github.com/xicodomingues/francinette) having link different tests, carried out by the people below
 * [Tripouille](https://github.com/Tripouille) for [libftTester](https://github.com/Tripouille/libftTester), [gnlTester](https://github.com/Tripouille/gnlTester) and [printfTester](https://github.com/Tripouille/printfTester)
